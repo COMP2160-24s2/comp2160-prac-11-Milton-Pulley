@@ -46,6 +46,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9569d5de93e6044e7a2a1395d1b6f35f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  floorLayer:
+    serializedVersion: 2
+    m_Bits: 64
   crosshair: {fileID: 7485987256551808895}
   target: {fileID: 2155366059082070411}
 --- !u!1 &3945490509769068079

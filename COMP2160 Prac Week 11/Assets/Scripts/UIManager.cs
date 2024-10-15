@@ -15,86 +15,104 @@ using UnityEngine.InputSystem;
 [DefaultExecutionOrder(-100)]
 public class UIManager : MonoBehaviour
 {
+	[SerializeField] private LayerMask floorLayer;
+	private Camera mainCam;
+	public Camera MainCam
+	{
+		get { return mainCam; }
+	}
+
 #region UI Elements
-    [SerializeField] private Transform crosshair;
-    [SerializeField] private Transform target;
+	[SerializeField] private Transform crosshair;
+	[SerializeField] private Transform target;
 #endregion 
 
 #region Singleton
-    static private UIManager instance;
-    static public UIManager Instance
-    {
-        get { return instance; }
-    }
+	static private UIManager instance;
+	static public UIManager Instance
+	{
+		get { return instance; }
+	}
 #endregion 
 
 #region Actions
-    private Actions actions;
-    private InputAction mouseAction;
-    private InputAction deltaAction;
-    private InputAction selectAction;
+	private Actions actions;
+	private InputAction mouseAction;
+	private InputAction deltaAction;
+	private InputAction selectAction;
 #endregion
 
 #region Events
-    public delegate void TargetSelectedEventHandler(Vector3 worldPosition);
-    public event TargetSelectedEventHandler TargetSelected;
+	public delegate void TargetSelectedEventHandler(Vector3 worldPosition);
+	public event TargetSelectedEventHandler TargetSelected;
 #endregion
 
 #region Init & Destroy
-    void Awake()
-    {
-        if (instance != null)
-        {
-            Debug.LogError("There is more than one UIManager in the scene.");
-        }
+	void Awake()
+	{
+		if (instance != null)
+		{
+			Debug.LogError("There is more than one UIManager in the scene.");
+		}
 
-        instance = this;
+		instance = this;
 
-        actions = new Actions();
-        mouseAction = actions.mouse.position;
-        deltaAction = actions.mouse.delta;
-        selectAction = actions.mouse.select;
+		actions = new Actions();
+		mouseAction = actions.mouse.position;
+		deltaAction = actions.mouse.delta;
+		selectAction = actions.mouse.select;
 
-        Cursor.visible = false;
-        target.gameObject.SetActive(false);
-    }
+		Cursor.visible = false;
+		target.gameObject.SetActive(false);
 
-    void OnEnable()
-    {
-        actions.mouse.Enable();
-    }
+		mainCam = Camera.main;
+		if(mainCam == null)
+		{
+			Debug.LogError("Error: could not find Camera.main!");
+		}
+	}
 
-    void OnDisable()
-    {
-        actions.mouse.Disable();
-    }
+	void OnEnable()
+	{
+		actions.mouse.Enable();
+	}
+
+	void OnDisable()
+	{
+		actions.mouse.Disable();
+	}
 #endregion Init
 
 #region Update
-    void Update()
-    {
-        MoveCrosshair();
-        SelectTarget();
-    }
+	void Update()
+	{
+		MoveCrosshair();
+		SelectTarget();
+	}
 
-    private void MoveCrosshair() 
-    {
-        Vector2 mousePos = mouseAction.ReadValue<Vector2>();
+	private void MoveCrosshair() 
+	{
+		Vector2 mousePos = mouseAction.ReadValue<Vector2>();
+		//Debug.Log(mousePos);
 
-        // FIXME: Move the crosshair position to the mouse position (in world coordinates)
-        // crosshair.position = ...;
-    }
+		Ray ray = mainCam.ScreenPointToRay(mousePos);
+		RaycastHit hit;
+		if(Physics.Raycast(ray, out hit, floorLayer))
+		{
+			crosshair.position = hit.point;
+		}
+	}
 
-    private void SelectTarget()
-    {
-        if (selectAction.WasPerformedThisFrame())
-        {
-            // set the target position and invoke 
-            target.gameObject.SetActive(true);
-            target.position = crosshair.position;     
-            TargetSelected?.Invoke(target.position);       
-        }
-    }
+	private void SelectTarget()
+	{
+		if (selectAction.WasPerformedThisFrame())
+		{
+			// set the target position and invoke 
+			target.gameObject.SetActive(true);
+			target.position = crosshair.position;     
+			TargetSelected?.Invoke(target.position);       
+		}
+	}
 
 #endregion Update
 
