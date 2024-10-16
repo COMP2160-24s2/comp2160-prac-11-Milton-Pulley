@@ -48,9 +48,7 @@ public class CameraZoom : MonoBehaviour
 	// Update is called once per frame
 	private void Update()
 	{
-		float r = zoomAction.ReadValue<float>() * Time.deltaTime * sensitivity;
-		Debug.Log(r);
-		currCameraSize += r;
+		currCameraSize += zoomAction.ReadValue<float>() * Time.deltaTime * sensitivity;
 		currCameraSize = Mathf.Clamp01(currCameraSize);
 
 		if(attachedCamera.orthographic)
