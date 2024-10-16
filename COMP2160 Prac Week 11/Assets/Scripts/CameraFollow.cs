@@ -12,7 +12,7 @@ public class CameraFollow : MonoBehaviour
 	{
 		if(target == null)
 		{
-			Debug.LogError($"{nameof(Camera)} has no target to follow!");
+			Debug.LogError($"Error: {nameof(CameraFollow)} has no target to follow!");
 		}
 	}
 
