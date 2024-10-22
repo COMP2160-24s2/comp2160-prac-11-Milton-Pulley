@@ -94,7 +94,9 @@ public class UIManager : MonoBehaviour
 		//Vector2 v = mousePos;
 		if(moveCrosshairByDelta)
 		{
+			mousePos = mainCam.WorldToScreenPoint(crosshair.position);
 			mousePos += deltaAction.ReadValue<Vector2>();
+
 			//Vector2 v2 = deltaAction.ReadValue<Vector2>();
 			//Debug.Log(v2);
 			// constant different depending on screen resolution AND editor scale
@@ -104,6 +106,7 @@ public class UIManager : MonoBehaviour
 		{
 			mousePos = mouseAction.ReadValue<Vector2>();
 		}
+		
 		if(Input.GetKeyDown(KeyCode.P))
 		{
 			mousePos = mouseAction.ReadValue<Vector2>();
@@ -115,11 +118,11 @@ public class UIManager : MonoBehaviour
 		RaycastHit hit;
 		if(Physics.Raycast(ray, out hit, floorLayer))
 		{
-			crosshair.position = hit.point + (hit.normal * crosshairHoverDistance);
+			crosshair.position = hit.point;
+			// + (hit.normal * crosshairHoverDistance); // fixes z-fighting but bad stuff happens
 		}
 	}
 
-	// breaks mouse delta
 	private void OnApplicationFocus(bool focused)
 	{
 		//Application.Onn += (focused) => 
